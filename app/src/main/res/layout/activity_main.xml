@@ -1,0 +1,243 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 邮政编码部分 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="邮政编码"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/postcode1"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/edittext_border"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/postcode2"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/edittext_border"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/postcode3"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/edittext_border"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/postcode4"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/edittext_border"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/postcode5"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/edittext_border"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/postcode6"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/edittext_border"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <!-- 地点输入 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="地点"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/locationEditText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edittext_border"
+            android:hint="输入地点或从地图选择"
+            android:inputType="text"
+            android:padding="8dp" />
+
+        <Button
+            android:id="@+id/selectLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="从地图选择地点" />
+
+        <!-- 图片选择部分 -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:columnCount="2"
+            android:rowCount="2">
+
+            <!-- 人物 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/personImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:background="@drawable/image_border"
+                    android:scaleType="centerCrop" />
+
+                <Button
+                    android:id="@+id/selectPersonButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="人物" />
+            </LinearLayout>
+
+            <!-- 美食 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/foodImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:background="@drawable/image_border"
+                    android:scaleType="centerCrop" />
+
+                <Button
+                    android:id="@+id/selectFoodButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="美食" />
+            </LinearLayout>
+
+            <!-- 景观 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/sceneryImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:background="@drawable/image_border"
+                    android:scaleType="centerCrop" />
+
+                <Button
+                    android:id="@+id/selectSceneryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="景观" />
+            </LinearLayout>
+
+            <!-- 趣事 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1"
+                android:layout_margin="4dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/funnyImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:background="@drawable/image_border"
+                    android:scaleType="centerCrop" />
+
+                <Button
+                    android:id="@+id/selectFunnyButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="趣事" />
+            </LinearLayout>
+        </GridLayout>
+
+        <!-- 留言部分 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="留言"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/messageEditText"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edittext_border"
+            android:gravity="top"
+            android:hint="输入留言内容"
+            android:inputType="textMultiLine"
+            android:padding="8dp" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="保存明信片" />
+    </LinearLayout>
+</ScrollView>
