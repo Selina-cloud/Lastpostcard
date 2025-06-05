@@ -101,7 +101,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edittext_border"
-            android:hint="输入地点或从地图选择"
+            android:hint="输入地点或从参考中选择"
             android:inputType="text"
             android:padding="8dp" />
 
@@ -110,7 +110,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="从地图选择地点" />
+            android:text="邮政编码参考" />
 
         <!-- 图片选择部分 -->
         <GridLayout

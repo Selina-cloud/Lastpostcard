@@ -74,16 +74,33 @@ public class PostcardDetailActivity extends AppCompatActivity {
         if (images != null) {
             if (images.length > 0 && images[0] != null) {
                 personImageView.setImageBitmap(images[0]);
+            } else {
+                personImageView.setImageResource(R.drawable.default_person); // 设置默认图片
             }
+
             if (images.length > 1 && images[1] != null) {
                 foodImageView.setImageBitmap(images[1]);
+            } else {
+                foodImageView.setImageResource(R.drawable.default_food); // 设置默认图片
             }
+
             if (images.length > 2 && images[2] != null) {
                 sceneryImageView.setImageBitmap(images[2]);
+            } else {
+                sceneryImageView.setImageResource(R.drawable.default_scenery); // 设置默认图片
             }
+
             if (images.length > 3 && images[3] != null) {
                 funnyImageView.setImageBitmap(images[3]);
+            } else {
+                funnyImageView.setImageResource(R.drawable.default_funny); // 设置默认图片
             }
+        } else {
+            // 如果images数组为null，设置所有图片为默认图片
+            personImageView.setImageResource(R.drawable.default_person);
+            foodImageView.setImageResource(R.drawable.default_food);
+            sceneryImageView.setImageResource(R.drawable.default_scenery);
+            funnyImageView.setImageResource(R.drawable.default_funny);
         }
     }
 }

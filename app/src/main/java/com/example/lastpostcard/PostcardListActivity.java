@@ -50,7 +50,7 @@ public class PostcardListActivity extends AppCompatActivity {
 
         // Initialize or update adapter
         if (adapter == null) {
-            adapter = new PostcardAdapter(this, cursor);
+            adapter = new PostcardAdapter(this, cursor, dbHelper);  // 传入dbHelper
             recyclerView.setAdapter(adapter);
         } else {
             adapter.changeCursor(cursor);
