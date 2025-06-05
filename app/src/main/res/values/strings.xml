@@ -8,6 +8,7 @@
     <string name="previous">Previous</string>
     <string name="postcode_format">邮政编码: %s</string>
     <string name="location_format">地点: %s</string>
+    <string name="delete">删除</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

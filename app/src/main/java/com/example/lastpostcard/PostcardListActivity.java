@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class PostcardListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -50,7 +51,23 @@ public class PostcardListActivity extends AppCompatActivity {
 
         // Initialize or update adapter
         if (adapter == null) {
-            adapter = new PostcardAdapter(this, cursor, dbHelper);  // 传入dbHelper
+            adapter = new PostcardAdapter(this, cursor, new PostcardAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(long id) {
+                    // Handle item click (view details)
+                    Intent intent = new Intent(PostcardListActivity.this, PostcardDetailActivity.class);
+                    intent.putExtra("postcard_id", id);
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onDeleteClick(long id) {
+                    // Handle delete action
+                    dbHelper.deletePostcard(id);
+                    Toast.makeText(PostcardListActivity.this, "明信片已删除", Toast.LENGTH_SHORT).show();
+                    loadPostcards(); // Refresh the list
+                }
+            });
             recyclerView.setAdapter(adapter);
         } else {
             adapter.changeCursor(cursor);

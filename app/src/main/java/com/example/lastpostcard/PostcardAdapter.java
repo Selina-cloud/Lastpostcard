@@ -1,12 +1,13 @@
 package com.example.lastpostcard;
+
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,12 +17,17 @@ import androidx.recyclerview.widget.RecyclerView;
 public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.PostcardViewHolder> {
     private Context context;
     private Cursor cursor;
-    private PostcardDbHelper dbHelper;
+    private OnItemClickListener listener;
 
-    public PostcardAdapter(Context context, Cursor cursor, PostcardDbHelper dbHelper) {
+    public interface OnItemClickListener {
+        void onItemClick(long id);
+        void onDeleteClick(long id);
+    }
+
+    public PostcardAdapter(Context context, Cursor cursor, OnItemClickListener listener) {
         this.context = context;
         this.cursor = cursor;
-        this.dbHelper = dbHelper;
+        this.listener = listener;
     }
 
     public void changeCursor(Cursor newCursor) {
@@ -48,19 +54,17 @@ public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.Postca
 
         // Get data from cursor
         long id = cursor.getLong(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_ID));
-        String postcode = cursor.getString(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_POSTCODE));
         String location = cursor.getString(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_LOCATION));
         byte[] imageBytes = cursor.getBlob(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_PERSON_IMAGE));
 
         // Set data to views
-        holder.locationTextView.setText(location);
-        holder.postcodeTextView.setText(postcode);
+        holder.locationTextView.setText(context.getString(R.string.location_format, location));
 
-        // Display thumbnail image
+        // Display thumbnail image with improved memory management
         if (imageBytes != null && imageBytes.length > 0) {
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 2; // Downsample image
+                options.inSampleSize = 2; // Downsample image to reduce memory usage
                 Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
                 if (bitmap != null) {
                     holder.thumbnailImageView.setImageBitmap(bitmap);
@@ -74,13 +78,17 @@ public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.Postca
             setPlaceholderImage(holder);
         }
 
-        // Set click listener
+        // Set click listener for item view
         holder.itemView.setOnClickListener(v -> {
-            Postcard postcard = dbHelper.getPostcardById(id);
-            if (postcard != null) {
-                Intent intent = new Intent(context, PostcardDetailActivity.class);
-                intent.putExtra("postcard", postcard);
-                context.startActivity(intent);
+            if (listener != null) {
+                listener.onItemClick(id);
+            }
+        });
+
+        // Set click listener for delete button
+        holder.deleteButton.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDeleteClick(id);
             }
         });
     }
@@ -96,14 +104,14 @@ public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.Postca
 
     static class PostcardViewHolder extends RecyclerView.ViewHolder {
         TextView locationTextView;
-        TextView postcodeTextView;
         ImageView thumbnailImageView;
+        ImageButton deleteButton;
 
         public PostcardViewHolder(@NonNull View itemView) {
             super(itemView);
             locationTextView = itemView.findViewById(R.id.locationTextView);
-            postcodeTextView = itemView.findViewById(R.id.postcodeTextView);
             thumbnailImageView = itemView.findViewById(R.id.thumbnailImageView);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 
