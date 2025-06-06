@@ -36,6 +36,7 @@ public class PostcardListActivity extends AppCompatActivity {
         createNewButton.setOnClickListener(v -> {
             startActivity(new Intent(this, MainActivity.class));
         });
+
     }
 
     @Override
