@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PostcardDetailActivity extends AppCompatActivity {
@@ -31,6 +32,10 @@ public class PostcardDetailActivity extends AppCompatActivity {
         Postcard postcard = getIntent().getParcelableExtra("postcard");
         if (postcard != null) {
             displayPostcardDetails(postcard);
+        } else {
+            // 如果没有获取到明信片数据，显示错误信息并返回
+            Toast.makeText(this, "无法加载明信片数据", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
         // 设置返回按钮点击事件

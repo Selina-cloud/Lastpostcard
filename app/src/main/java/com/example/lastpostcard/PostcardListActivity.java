@@ -36,7 +36,6 @@ public class PostcardListActivity extends AppCompatActivity {
         createNewButton.setOnClickListener(v -> {
             startActivity(new Intent(this, MainActivity.class));
         });
-
     }
 
     @Override
@@ -56,9 +55,14 @@ public class PostcardListActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(long id) {
                     // Handle item click (view details)
-                    Intent intent = new Intent(PostcardListActivity.this, PostcardDetailActivity.class);
-                    intent.putExtra("postcard_id", id);
-                    startActivity(intent);
+                    Postcard postcard = dbHelper.getPostcardById(id);
+                    if (postcard != null) {
+                        Intent intent = new Intent(PostcardListActivity.this, PostcardDetailActivity.class);
+                        intent.putExtra("postcard", postcard);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(PostcardListActivity.this, "无法加载明信片数据", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
