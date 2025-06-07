@@ -10,14 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.PostcardViewHolder> {
-    private Context context;
+    private static final String TAG = "PostcardAdapter";
+    private final Context context;
     private Cursor cursor;
-    private OnItemClickListener listener;
+    private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(long id);
@@ -28,14 +31,6 @@ public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.Postca
         this.context = context;
         this.cursor = cursor;
         this.listener = listener;
-    }
-
-    public void changeCursor(Cursor newCursor) {
-        if (cursor != null) {
-            cursor.close();
-        }
-        cursor = newCursor;
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -49,52 +44,96 @@ public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.Postca
     @Override
     public void onBindViewHolder(@NonNull PostcardViewHolder holder, int position) {
         if (!cursor.moveToPosition(position)) {
+            Log.e(TAG, "Couldn't move cursor to position " + position);
             return;
         }
 
-        // Get data from cursor
-        long id = cursor.getLong(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_ID));
-        String location = cursor.getString(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_LOCATION));
-        byte[] imageBytes = cursor.getBlob(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_PERSON_IMAGE));
+        try {
+            // 获取数据
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_ID));
+            String location = cursor.getString(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_LOCATION));
+            byte[] imageBytes = cursor.getBlob(cursor.getColumnIndexOrThrow(PostcardDbHelper.COLUMN_PERSON_IMAGE));
 
-        // Set data to views
-        holder.locationTextView.setText(context.getString(R.string.location_format, location));
+            // 设置位置文本
+            holder.locationTextView.setText(location != null ? location : "未知地点");
 
-        // Display thumbnail image with improved memory management
-        if (imageBytes != null && imageBytes.length > 0) {
-            try {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 2; // Downsample image to reduce memory usage
-                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
-                if (bitmap != null) {
-                    holder.thumbnailImageView.setImageBitmap(bitmap);
-                } else {
-                    setPlaceholderImage(holder);
+            // 加载并显示缩略图（优化内存使用）
+            loadThumbnail(holder.thumbnailImageView, imageBytes);
+
+            // 设置点击事件
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onItemClick(id);
                 }
-            } catch (Exception e) {
-                setPlaceholderImage(holder);
-            }
-        } else {
-            setPlaceholderImage(holder);
+            });
+
+            // 设置删除按钮点击事件
+            holder.deleteButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onDeleteClick(id);
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error binding view holder", e);
+            holder.locationTextView.setText("数据加载错误");
+            setPlaceholderImage(holder.thumbnailImageView);
         }
-
-        // Set click listener for item view
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(id);
-            }
-        });
-
-        // Set click listener for delete button
-        holder.deleteButton.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onDeleteClick(id);
-            }
-        });
     }
 
-    private void setPlaceholderImage(PostcardViewHolder holder) {
-        holder.thumbnailImageView.setImageResource(android.R.drawable.ic_menu_gallery);
+    private void loadThumbnail(ImageView imageView, byte[] imageBytes) {
+        if (imageBytes == null || imageBytes.length == 0) {
+            setPlaceholderImage(imageView);
+            return;
+        }
+
+        try {
+            // 使用BitmapFactory.Options优化图片加载
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+
+            // 计算采样率
+            options.inSampleSize = calculateInSampleSize(options, 100, 100);
+            options.inJustDecodeBounds = false;
+
+            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+            } else {
+                setPlaceholderImage(imageView);
+            }
+        } catch (OutOfMemoryError e) {
+            Log.e(TAG, "Out of memory error loading thumbnail", e);
+            setPlaceholderImage(imageView);
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading thumbnail", e);
+            setPlaceholderImage(imageView);
+        }
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // 原始图片尺寸
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // 计算最大的inSampleSize值，保持宽高都大于请求尺寸
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    private void setPlaceholderImage(ImageView imageView) {
+        imageView.setImageResource(R.drawable.ic_default_thumbnail);
     }
 
     @Override
@@ -102,10 +141,18 @@ public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.Postca
         return cursor == null ? 0 : cursor.getCount();
     }
 
+    public void changeCursor(Cursor newCursor) {
+        if (cursor != null) {
+            cursor.close();
+        }
+        cursor = newCursor;
+        notifyDataSetChanged();
+    }
+
     static class PostcardViewHolder extends RecyclerView.ViewHolder {
-        TextView locationTextView;
-        ImageView thumbnailImageView;
-        ImageButton deleteButton;
+        final TextView locationTextView;
+        final ImageView thumbnailImageView;
+        final ImageButton deleteButton;
 
         public PostcardViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -120,6 +167,7 @@ public class PostcardAdapter extends RecyclerView.Adapter<PostcardAdapter.Postca
         try {
             if (cursor != null) {
                 cursor.close();
+                cursor = null;
             }
         } finally {
             super.finalize();

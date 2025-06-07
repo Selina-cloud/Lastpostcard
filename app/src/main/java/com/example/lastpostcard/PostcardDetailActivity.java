@@ -2,82 +2,133 @@ package com.example.lastpostcard;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PostcardDetailActivity extends AppCompatActivity {
+    private static final String TAG = "PostcardDetailActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_postcard_detail);
+        Log.d(TAG, "onCreate started");
 
-        // 获取传递过来的Postcard对象
+        // 1. 获取并验证传递过来的Postcard对象
         Postcard postcard = getIntent().getParcelableExtra("postcard");
         if (postcard == null) {
+            Log.e(TAG, "No postcard data received");
+            showErrorMessage("无法加载明信片数据");
             finish();
             return;
         }
 
-        // 初始化视图
+        Log.d(TAG, "Displaying postcard - Location: " + postcard.getLocation() +
+                ", Postcode: " + postcard.getPostcode());
+
+       // 初始化视图
         initViews();
 
-        // 加载数据
+        //  加载并显示数据
         displayPostcard(postcard);
 
-        // 返回按钮点击事件
-        Button backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> finish());
+        // 设置返回按钮
+        setupBackButton();
     }
 
     private void initViews() {
-        // 初始化所有视图
-        // 这里不需要具体实现，因为我们在displayPostcard中直接查找视图
     }
 
     private void displayPostcard(Postcard postcard) {
         // 显示邮政编码
-        String postcode = postcard.getPostcode();
-        if (postcode != null && postcode.length() == 6) {
-            TextView[] postcodeViews = {
-                    findViewById(R.id.detailPostcode1),
-                    findViewById(R.id.detailPostcode2),
-                    findViewById(R.id.detailPostcode3),
-                    findViewById(R.id.detailPostcode4),
-                    findViewById(R.id.detailPostcode5),
-                    findViewById(R.id.detailPostcode6)
-            };
-            for (int i = 0; i < 6; i++) {
-                postcodeViews[i].setText(String.valueOf(postcode.charAt(i)));
-            }
-        }
+        displayPostcode(postcard.getPostcode());
 
         // 显示地点和留言
-        ((TextView)findViewById(R.id.detailLocationTextView)).setText(postcard.getLocation());
-        ((TextView)findViewById(R.id.detailMessageTextView)).setText(postcard.getMessage());
+        displayTextContent(postcard.getLocation(), postcard.getMessage());
 
         // 显示图片
-        Bitmap[] images = postcard.getImages();
-        if (images != null) {
+        displayImages(postcard.getImages());
+    }
+
+    private void displayPostcode(String postcode) {
+        if (postcode == null || postcode.length() != 6) {
+            Log.w(TAG, "Invalid postcode: " + postcode);
+            return;
+        }
+
+        TextView[] postcodeViews = {
+                findViewById(R.id.detailPostcode1),
+                findViewById(R.id.detailPostcode2),
+                findViewById(R.id.detailPostcode3),
+                findViewById(R.id.detailPostcode4),
+                findViewById(R.id.detailPostcode5),
+                findViewById(R.id.detailPostcode6)
+        };
+
+        for (int i = 0; i < 6; i++) {
+            try {
+                postcodeViews[i].setText(String.valueOf(postcode.charAt(i)));
+            } catch (Exception e) {
+                Log.e(TAG, "Error setting postcode digit", e);
+            }
+        }
+    }
+
+    private void displayTextContent(String location, String message) {
+        try {
+            TextView locationView = findViewById(R.id.detailLocationTextView);
+            TextView messageView = findViewById(R.id.detailMessageTextView);
+
+            locationView.setText(location != null ? location : "未填写地点");
+            messageView.setText(message != null ? message : "未填写留言");
+        } catch (Exception e) {
+            Log.e(TAG, "Error displaying text content", e);
+        }
+    }
+
+    private void displayImages(Bitmap[] images) {
+        if (images == null || images.length < 4) {
+            Log.w(TAG, "Invalid images array");
+            return;
+        }
+
+        try {
             ImageView personImage = findViewById(R.id.detailPersonImage);
             ImageView foodImage = findViewById(R.id.detailFoodImage);
             ImageView sceneryImage = findViewById(R.id.detailSceneryImage);
             ImageView funnyImage = findViewById(R.id.detailFunnyImage);
 
-            if (images.length > 0 && images[0] != null) {
-                personImage.setImageBitmap(images[0]);
-            }
-            if (images.length > 1 && images[1] != null) {
-                foodImage.setImageBitmap(images[1]);
-            }
-            if (images.length > 2 && images[2] != null) {
-                sceneryImage.setImageBitmap(images[2]);
-            }
-            if (images.length > 3 && images[3] != null) {
-                funnyImage.setImageBitmap(images[3]);
-            }
+            // 设置图片，如果为null则保持默认图片
+            personImage.setImageBitmap(images[0]);
+            foodImage.setImageBitmap(images[1]);
+            sceneryImage.setImageBitmap(images[2]);
+            funnyImage.setImageBitmap(images[3]);
+        } catch (Exception e) {
+            Log.e(TAG, "Error displaying images", e);
         }
+    }
+
+    private void setupBackButton() {
+        try {
+            Button backButton = findViewById(R.id.backButton);
+            backButton.setOnClickListener(v -> finish());
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting up back button", e);
+        }
+    }
+
+    private void showErrorMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
     }
 }

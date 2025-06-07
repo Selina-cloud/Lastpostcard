@@ -11,7 +11,7 @@ public class Postcard implements Parcelable {
     private String postcode;
     private String location;
     private String message;
-    private Bitmap[] images; // 0:人物, 1:美食, 2:景观, 3:趣事
+    private Bitmap[] images;
     private long id; // 数据库ID
 
     public Postcard(String postcode, String location, String message, Bitmap[] images) {
@@ -21,14 +21,12 @@ public class Postcard implements Parcelable {
         this.images = images != null ? images : new Bitmap[4];
     }
 
-    // Getters
     public long getId() { return id; }
     public String getPostcode() { return postcode; }
     public String getLocation() { return location; }
     public String getMessage() { return message; }
     public Bitmap[] getImages() { return images; }
 
-    // Setters
     public void setId(long id) { this.id = id; }
     public void setPostcode(String postcode) { this.postcode = postcode; }
     public void setLocation(String location) { this.location = location; }
