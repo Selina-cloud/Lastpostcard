@@ -4,19 +4,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Lastpostcard"
-        tools:targetApi="31">
+        android:theme="@style/Theme.Lastpostcard">
 
         <!-- 主入口 Activity（列表页） -->
         <activity
@@ -28,15 +24,16 @@
             </intent-filter>
         </activity>
 
-        <!-- 创建明信片的 Activity -->
+        <!-- 创建/编辑明信片的 Activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
 
         <!-- 明信片详情页 -->
         <activity
             android:name=".PostcardDetailActivity"
-            android:exported="false" />
+            android:exported="false"/>
     </application>
 
 </manifest>
